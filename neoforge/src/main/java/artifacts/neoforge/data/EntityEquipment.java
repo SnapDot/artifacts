@@ -1,34 +1,23 @@
 package artifacts.neoforge.data;
 
-import artifacts.config.value.Value;
 import artifacts.loot.ConfigValueChance;
-import artifacts.registry.ModDataComponents;
 import artifacts.registry.ModItems;
 import artifacts.registry.ModLootTables;
-import com.google.common.collect.Sets;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
-import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class EntityEquipment {
 
     private final LootTables lootTables;
-    private final Set<EntityType<?>> entityTypes = new HashSet<>();
 
     public EntityEquipment(LootTables lootTables) {
         this.lootTables = lootTables;
     }
 
     public void addLootTables() {
-        entityTypes.clear();
-
         addItems(EntityType.ZOMBIE,
                 ModItems.COWBOY_HAT.value(),
                 ModItems.BUNNY_HOPPERS.value(),
@@ -51,6 +40,14 @@ public class EntityEquipment {
                 ModItems.SNOWSHOES.value(),
                 ModItems.STEADFAST_SPIKES.value()
         );
+        addItems(EntityType.BOGGED,
+                ModItems.ANTIDOTE_VESSEL.value(),
+                ModItems.ROOTED_BOOTS.value()
+        );
+        addItems(EntityType.PARCHED,
+                ModItems.PANIC_NECKLACE.value(),
+                ModItems.PICKAXE_HEATER.value()
+        );
         addItems(EntityType.WITHER_SKELETON,
                 ModItems.FIRE_GAUNTLET.value(),
                 ModItems.ANTIDOTE_VESSEL.value()
@@ -69,31 +66,19 @@ public class EntityEquipment {
                 ModItems.ONION_RING.value(),
                 ModItems.STRIDER_SHOES.value()
         );
-
-        if (!entityTypes.equals(ModLootTables.ENTITY_EQUIPMENT.keySet())) {
-            throw new IllegalStateException(Sets.symmetricDifference(entityTypes, ModLootTables.ENTITY_EQUIPMENT.keySet()).toString());
-        }
     }
 
     public void addItems(EntityType<?> entityType, Item... items) {
-        if (!ModLootTables.ENTITY_EQUIPMENT.containsKey(entityType)) {
-            throw new IllegalArgumentException("Missing entity equipment entity: %s".formatted(BuiltInRegistries.ENTITY_TYPE.getKey(entityType)));
-        }
         LootPool.Builder pool = LootPool.lootPool();
         for (Item item : items) {
-            if (item == ModItems.SCARF_OF_INVISIBILITY.value()) {
-                pool.add(LootTables.item(item, 1).apply(SetComponentsFunction.setComponent(ModDataComponents.HIDE_WHEN_INVISIBLE.get(), Value.of(false))));
-            } else {
-                pool.add(LootTables.item(item, 1));
-            }
+            pool.add(LootTables.item(item, 1));
         }
         addEquipment(entityType, pool);
     }
 
     public void addEquipment(EntityType<?> entityType, LootPool.Builder pool) {
-        entityTypes.add(entityType);
         LootTable.Builder builder = LootTable.lootTable();
         builder.withPool(pool.when(ConfigValueChance.entityEquipmentChance()));
-        lootTables.addLootTable(ModLootTables.entityEquipmentLootTable(entityType).identifier().getPath(), _ -> builder, LootContextParamSets.ALL_PARAMS);
+        lootTables.addLootTable(ModLootTables.getEntityEquipmentLootTable(entityType).identifier().getPath(), _ -> builder, LootContextParamSets.ALL_PARAMS);
     }
 }

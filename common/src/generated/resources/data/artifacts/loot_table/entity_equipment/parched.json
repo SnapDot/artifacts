@@ -11,19 +11,15 @@
       "entries": [
         {
           "type": "minecraft:loot_table",
-          "value": "artifacts:items/cowboy_hat"
+          "value": "artifacts:items/panic_necklace"
         },
         {
           "type": "minecraft:loot_table",
-          "value": "artifacts:items/bunny_hoppers"
-        },
-        {
-          "type": "minecraft:loot_table",
-          "value": "artifacts:items/scarf_of_invisibility"
+          "value": "artifacts:items/pickaxe_heater"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "artifacts:entity_equipment/zombie"
+  "random_sequence": "artifacts:entity_equipment/parched"
 }
